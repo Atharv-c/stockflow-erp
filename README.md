@@ -5,7 +5,7 @@ This project is currently under development.
 - Python
 - HTML,CSS,JS
 - FastAPI
-- PostgreSQL
+- Database
 - SQLAlchemy 
 - Alembic
 - Bootstrap 5
