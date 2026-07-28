@@ -1,0 +1,218 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Suppliers</h2>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+
+        <form method="post" action="/suppliers">
+
+            <div class="row g-3">
+
+                <div class="col-md-2">
+                    <input class="form-control" name="supplier_code" placeholder="Supplier Code" required>
+                </div>
+
+                <div class="col-md-4">
+                    <input class="form-control" name="company_name" placeholder="Company Name" required>
+                </div>
+
+                <div class="col-md-3">
+                    <input class="form-control" name="contact_person" placeholder="Contact Person">
+                </div>
+
+                <div class="col-md-3">
+                    <input type="tel" name="phone" class="form-control" placeholder="10-digit Mobile Number"
+                        pattern="[6-9][0-9]{9}" minlength="10" maxlength="10" required>
+                </div>
+
+                <div class="col-md-4">
+                    <input class="form-control" name="email" type="email" placeholder="Email">
+                </div>
+
+                <div class="col-md-4">
+                    <input class="form-control" name="gstin" placeholder="GSTIN">
+                </div>
+
+                <div class="col-md-4">
+                    <input class="form-control" name="address" placeholder="Address">
+                </div>
+
+                <div class="col-md-4">
+                    <input class="form-control" name="city" placeholder="City">
+                </div>
+
+                <div class="col-md-4">
+                    <input class="form-control" name="state" placeholder="State">
+                </div>
+
+                <div class="col-md-2">
+                    <input class="form-control" name="pincode" placeholder="Pincode">
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_active" checked>
+                        <label class="form-check-label">Active</label>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        Add Supplier
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Company</th>
+                    <th>Contact</th>
+                    <th>Phone</th>
+                    <th>GSTIN</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for supplier in suppliers %}
+
+                <tr>
+
+                    <td>{{ supplier.supplier_code }}</td>
+                    <td>{{ supplier.company_name }}</td>
+                    <td>{{ supplier.contact_person }}</td>
+                    <td>{{ supplier.phone }}</td>
+                    <td>{{ supplier.gstin or "-" }}</td>
+
+                    <td>
+                        {% if supplier.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <button class="btn btn-success btn-sm" data-bs-toggle="collapse"
+                            data-bs-target="#edit{{ supplier.id }}">
+                            Edit
+                        </button>
+
+                        <form class="d-inline" method="post" action="/suppliers/{{ supplier.id }}/delete"
+                            onsubmit="return confirm('Delete this supplier?');">
+
+                            <button class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+
+                        </form>
+                    </td>
+
+                </tr>
+
+                <tr class="collapse" id="edit{{ supplier.id }}">
+                    <td colspan="7">
+
+                        <form method="post" action="/suppliers/{{ supplier.id }}/edit">
+
+                            <div class="row g-2">
+
+                                <div class="col-md-2">
+                                    <input class="form-control" name="supplier_code"
+                                        value="{{ supplier.supplier_code }}" required>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <input class="form-control" name="company_name" value="{{ supplier.company_name }}"
+                                        required>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <input class="form-control" name="contact_person"
+                                        value="{{ supplier.contact_person or '' }}">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <input class="form-control" name="phone" value="{{ supplier.phone }}" required>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <input class="form-control" name="email" value="{{ supplier.email or '' }}">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <input class="form-control" name="gstin" value="{{ supplier.gstin or '' }}">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <input class="form-control" name="address" value="{{ supplier.address or '' }}">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <input class="form-control" name="city" value="{{ supplier.city or '' }}">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <input class="form-control" name="state" value="{{ supplier.state or '' }}">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <input class="form-control" name="pincode" value="{{ supplier.pincode or '' }}">
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="is_active" {% if
+                                            supplier.is_active %}checked{% endif %}>
+                                        <label class="form-check-label">Active</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button class="btn btn-success">
+                                        Save Changes
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </form>
+
+                    </td>
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        No Suppliers Found
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

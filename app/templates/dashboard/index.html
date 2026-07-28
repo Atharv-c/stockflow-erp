@@ -1,0 +1,385 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Dashboard</h2>
+
+        <span class="text-muted">
+            Welcome to StockFlow ERP
+        </span>
+
+    </div>
+
+    <!-- Statistics -->
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Products
+                    </h6>
+
+                    <h2>{{ total_products }}</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Customers
+                    </h6>
+
+                    <h2>{{ total_customers }}</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Suppliers
+                    </h6>
+
+                    <h2>{{ total_suppliers }}</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row g-4 mt-1">
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Invoices
+                    </h6>
+
+                    <h2>{{ total_invoices }}</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Sales
+                    </h6>
+
+                    <h2>
+                        ₹ {{ "%.2f"|format(total_sales) }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Low Stock Products
+                    </h6>
+
+                    <h2 class="text-danger">
+                        {{ low_stock_products }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Charts -->
+
+    <div class="row mt-5">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+                        Monthly Sales
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="salesChart" height="110"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+                        Business Summary
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="summaryChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Recent Invoices -->
+
+    <div class="card shadow mt-5">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Recent Invoices
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Invoice No.</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for invoice in recent_invoices %}
+
+                    <tr>
+
+                        <td>{{ invoice.invoice_number }}</td>
+
+                        <td>{{ invoice.customer.customer_name }}</td>
+
+                        <td>{{ invoice.invoice_date.strftime("%d-%m-%Y") }}</td>
+
+                        <td>₹ {{ invoice.grand_total }}</td>
+
+                        <td>
+
+                            {% if invoice.payment_status == "Paid" %}
+
+                            <span class="badge bg-success">
+                                Paid
+                            </span>
+
+                            {% elif invoice.payment_status == "Partial" %}
+
+                            <span class="badge bg-warning">
+                                Partial
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger">
+                                Unpaid
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="5" class="text-center">
+                            No invoices found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    new Chart(
+    document.getElementById("salesChart"),
+    {
+        type: "line",
+
+        data: {
+            labels: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul"
+            ],
+
+            datasets: [
+                {
+                    label: "Sales",
+
+                    data: [
+                        12000,
+                        18000,
+                        15000,
+                        22000,
+                        28000,
+                        32000,
+                        {{ total_sales }}
+                    ],
+
+                    borderColor: "#0d6efd",
+                    backgroundColor: "rgba(13,110,253,.15)",
+                    fill: true,
+                    tension: 0.35
+                }
+            ]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    display: true
+                }
+
+            }
+
+        }
+
+    }
+);
+
+new Chart(
+    document.getElementById("summaryChart"),
+    {
+        type: "doughnut",
+
+        data: {
+
+            labels: [
+                "Products",
+                "Customers",
+                "Suppliers",
+                "Invoices"
+            ],
+
+            datasets: [
+                {
+                    data: [
+                        {{ total_products }},
+                        {{ total_customers }},
+                        {{ total_suppliers }},
+                        {{ total_invoices }}
+                    ]
+                }
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    position: "bottom"
+                }
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}
