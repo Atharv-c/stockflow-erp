@@ -1,16 +1,16 @@
-# StockFlow ERP
+# StockFlow ERP ( in Progress )
 
-Production-ready Inventory & Billing ERP built with:
-
+Currently in development.
+This project is currently under development.
+- Python
+- HTML,CSS,JS
 - FastAPI
 - PostgreSQL
-- SQLAlchemy 2.0
+- SQLAlchemy 
 - Alembic
-- Jinja2
 - Bootstrap 5
 
-## Run
+Run
 
-```bash
+bash
 uvicorn app.main:app --reload
-```
