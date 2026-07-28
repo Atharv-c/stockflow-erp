@@ -1,6 +1,5 @@
 # StockFlow ERP ( in Progress )
 
-Currently in development.
 This project is currently under development.
 - Python
 - HTML,CSS,JS
